@@ -229,8 +229,8 @@ function getRoute(visited, from, to) {
 function bfsRobot({place, parcels}, route) {
     if (route == undefined || route.length == 0) {
         let parcel = parcels.find(
-            p => (p.place == place && roadGraph[place].some(n => p.address))
-            || p.place == place);
+            p => p.place == place && roadGraph[place].some(n => n == p.address));
+        if (!parcel) parcel = parcels.find(p => p.place == place);
         if (!parcel) parcel = parcels[0];
         if (parcel.place != place) {
             route = bfsRoute(roadGraph, place, parcel.place);
