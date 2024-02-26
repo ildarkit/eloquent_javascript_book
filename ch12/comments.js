@@ -1,5 +1,5 @@
 function skipSpace(string) {
-    return string.replace(/(\s*#.*)/, "").trim();
+    return string.replace(/([\s#].*?\n)/, "");
 }
 
 console.log(parse("# hello\nx"));
