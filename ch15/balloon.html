@@ -17,7 +17,7 @@
     if (event.key == "ArrowUp") {
       	size += Math.ceil(size * 0.1);
         if (size > MAX_SIZE) {
-            balloon.childNodes[0].nodeValue = "💥";
+            balloon.textContent = "💥";
             window.removeEventListener("keydown", resize);
         }
     } else if (event.key == "ArrowDown") {
