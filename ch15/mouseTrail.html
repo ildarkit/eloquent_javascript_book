@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+        .trail { /* className for the trail elements */
+            position: absolute;
+            height: 6px; width: 6px;
+            border-radius: 3px;
+            background: teal;
+        }
+        body {
+            height: 300px;
+        }
+        </style>
+    </head>
+    <body>
+        <script>
+        // Your code here.
+        const ELEMENT_COUNT = 50;
+        let scheduledEvent = null;
+        let lastIndex = 0;
+        let isEvent = false;
+        let eventTimeout;
+        let scheduledTimeout;
+        let trail = [];
+
+        for (let i = 0; i < ELEMENT_COUNT; i++) {
+            let el = document.createElement("div");
+            el.className = "trail";
+            document.body.appendChild(el);
+            trail.push(el);
+        }
+
+        window.addEventListener("mousemove", event => {
+            scheduledEvent = event;
+            isEvent = true;
+            requestAnimationFrame(animate);
+        });
+
+        function animate(_) {
+            if (scheduledEvent) {
+                trail[lastIndex].style.left = scheduledEvent.pageX + "px";
+                trail[lastIndex].style.top = scheduledEvent.pageY + "px";
+                lastIndex++;
+                if (lastIndex == trail.length) lastIndex = 0;
+            }
+
+            if (!isEvent && scheduledEvent) requestAnimationFrame(animate);
+
+            if (isEvent) {
+                eventTimeout = resetTimeout(5, eventTimeout,
+                    () => {
+                        isEvent = false;
+                        requestAnimationFrame(animate);
+                    });
+                scheduledTimeout = resetTimeout(1000, scheduledTimeout,
+                    () => scheduledEvent = null);
+            }
+        }
+
+        function resetTimeout(time, timeout, callback) {
+            clearTimeout(timeout);
+            return setTimeout(callback, time);
+        }
+        </script>
+    </body>
+</html>
