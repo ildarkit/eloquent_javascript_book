@@ -352,10 +352,14 @@ function runLevel(level, Display) {
 }
 
 async function runGame(plans, Display) {
-  for (let level = 0; level < plans.length;) {
+  let lives = 3;
+  for (let level = 0; level < plans.length && lives > 0;) {
+    console.log(`level: ${level}, lives: ${lives}`);
     let status = await runLevel(new Level(plans[level]),
                                 Display);
-    if (status == "won") level++;
+    if (status == "won") level++; else lives--;
   }
-  console.log("You've won!");
+
+  if (lives == 0) console.log("Game over"); else
+    console.log("You've won!");
 }
