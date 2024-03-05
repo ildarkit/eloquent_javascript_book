@@ -217,9 +217,10 @@ Level.prototype.touches = function(pos, size, type) {
 };
 
 Level.prototype.emptyFloor = function(pos, size) {
-  let xPos = Math.floor(pos.x);
+  let xLeftPos = Math.floor(pos.x);
+  let xRightPos = Math.floor(pos.x + size.x);
   let yPos = Math.ceil(pos.y + size.y);
-  return this.rows[yPos][xPos] == "empty";
+  return this.rows[yPos][xLeftPos] == "empty" || this.rows[yPos][xRightPos] == "empty";
 }
 
 State.prototype.update = function(time, keys) {
