@@ -216,6 +216,12 @@ Level.prototype.touches = function(pos, size, type) {
   return false;
 };
 
+Level.prototype.emptyFloor = function(pos, size) {
+  let xPos = Math.floor(pos.x);
+  let yPos = Math.ceil(pos.y + size.y);
+  return this.rows[yPos][xPos] == "empty";
+}
+
 State.prototype.update = function(time, keys) {
   let actors = this.actors
     .map(actor => actor.update(time, this, keys));

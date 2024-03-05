@@ -23,7 +23,8 @@
       update(time, state) {
         let newPos = this.pos.plus(this.speed.times(time));
         let speed;
-        if (state.level.touches(newPos, this.size, "wall")) {
+        if (state.level.touches(newPos, this.size, "wall") ||
+         state.level.emptyFloor(newPos, this.size)) {
           speed = this.speed.times(-1);
         } else speed = this.speed;
         return new Monster(newPos, speed);
@@ -56,7 +57,7 @@
 .#..............................#.
 .#..............................#.
 .#...........................o..#.
-.#..@...........................#.
+.#..@......................M....#.
 .##########..............########.
 ..........#..o..o..o..o..#........
 ..........#...........M..#........
