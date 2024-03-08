@@ -1,0 +1,53 @@
+<!doctype html>
+<canvas width="600" height="300"></canvas>
+<script>
+  let cx = document.querySelector("canvas").getContext("2d");
+  var results = [
+    {name: "Satisfied", count: 1043, color: "lightblue"},
+    {name: "Neutral", count: 563, color: "lightgreen"},
+    {name: "Unsatisfied", count: 510, color: "pink"},
+    {name: "No comment", count: 175, color: "silver"}];
+  let total = results
+    .reduce((sum, {count}) => sum + count, 0);
+  let currentAngle = -0.5 * Math.PI;
+  let centerX = 300, centerY = 150;
+  let radius = 100;
+  let x, y;
+  let sin, cos;
+
+  // Add code to draw the slice labels in this loop.
+  cx.font = "16px arial";
+  for (let result of results) {
+    let sliceAngle = (result.count / total) * 2 * Math.PI;
+    cx.beginPath();
+    cx.arc(centerX, centerY, radius,
+           currentAngle, currentAngle + sliceAngle);
+    cos = Math.cos(currentAngle + sliceAngle / 2);
+    sin = Math.sin(currentAngle + sliceAngle / 2);
+    switch (Math.round(cos)) {
+      case 0:
+        x = centerX + cos * radius - 20;
+        break;
+      case 1:
+        x = centerX + radius + 20;
+        break;
+      case -1:
+        x = centerX - 2 * radius;
+        break;
+      default:
+        x = centerX + cos * radius + 20;
+    }
+    switch (Math.round(sin)) {
+      case -1:
+        y = centerY - radius - 20;
+        break;
+      default:
+        y = centerY + sin * radius + 40;
+    }
+    cx.fillStyle = result.color;
+    cx.fillText(result.name, x, y);
+    currentAngle += sliceAngle;
+    cx.lineTo(centerX, centerY);
+    cx.fill();
+  }
+</script>
