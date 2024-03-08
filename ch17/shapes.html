@@ -1,0 +1,86 @@
+<!doctype html>
+<script src="code/chapter/16_game.js"></script>
+<script src="code/levels.js"></script>
+<script src="code/chapter/17_canvas.js"></script>
+
+<canvas width="600" height="200"></canvas>
+<script>
+  let cx = document.querySelector("canvas").getContext("2d");
+
+  // Your code here.
+  function trapezoid(cx, x, y, sideLine, topLine, bottomLine) {
+    let appendX = Math.floor((bottomLine - topLine) / 2);
+    cx.beginPath();
+    cx.moveTo(x, y);
+    cx.lineTo(x + topLine, y);
+    cx.lineTo(x + topLine + appendX, y + sideLine);
+    cx.lineTo(x - appendX, y + sideLine);
+    cx.closePath();
+    cx.stroke();
+  }
+
+  function rhombus(cx, x, y, side) {
+    cx.beginPath();
+    cx.moveTo(x, y);
+    cx.lineTo(x + side / 2, y + side / 2);
+    cx.lineTo(x, y + side);
+    cx.lineTo(x - side / 2, y + side / 2);
+    cx.lineTo(x, y);
+    cx.closePath();
+    cx.fillStyle = "red";
+    cx.fill();
+    cx.stroke();
+  }
+
+  function zigzag(cx, x, y, width, height) {
+    let dy = 5;
+    let m = 1;
+    cx.beginPath();
+    cx.moveTo(x, y);
+    for (let h = dy; h < height; h += dy) {
+      m = m % 2;
+      cx.lineTo(x + width * m, y + h);
+      m++;
+    }
+    cx.stroke();
+  }
+
+  function spiral(cx, x, y) {
+    const MAX_STEP = 30;
+    let radius = 2;
+    let angle = 0;
+    let step = MAX_STEP;
+    cx.beginPath();
+    cx.moveTo(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius);
+    for (let i = 0; i < 95; i++) {
+      angle += 2 * Math.PI / MAX_STEP;
+      radius += 2 * Math.PI / step;
+      cx.lineTo(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius);
+      if (step == 10) step = MAX_STEP;
+      step -= 10;
+    }
+    cx.stroke();
+  }
+
+  function star(cx, x, y) {
+    let radius = 60;
+    let angle = 3 / 2 * Math.PI;
+
+    cx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      cx.moveTo(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius);
+      angle += Math.PI / 4;
+      cx.quadraticCurveTo(x, y, x + Math.cos(angle) * radius, y + Math.sin(angle) * radius);
+      cx.lineTo(x, y);
+    }
+    cx.closePath();
+    cx.fillStyle = "yellow";
+    cx.fill();
+  }
+
+  trapezoid(cx, 30, 50, 70, 60, 100);
+  rhombus(cx, 150, 50, 70);
+  zigzag(cx, 200, 50, 70, 80);
+  spiral(cx, 330, 90);
+  star(cx, 450, 80);
+</script>
