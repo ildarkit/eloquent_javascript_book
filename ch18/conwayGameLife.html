@@ -52,7 +52,6 @@
       startColumn = 0;
       endColumn = 2;
     } else endColumn = startColumn + 3;
-    let rowLength = cells[rowIndex].length;
 
     return cells.slice(rowIndex, nextRowIndex)
       .map(row => {
