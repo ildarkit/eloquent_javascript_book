@@ -5,8 +5,8 @@
 
 <script>
   // Your code here.
-  const ROWS = 20;
-  const COLUMNS = 20;
+  const ROWS = 30;
+  const COLUMNS = 60;
 
   function randomCells(n = ROWS, m = COLUMNS) {
     let cells = new Array(n);
@@ -20,21 +20,71 @@
     return cells;
   }
 
-  function appendCellElements(grid, cells) {
+  function appendCellElements(grid, cells, clickHandler) {
     for (let i = 0; i < cells.length; i++) {
       for (let j = 0; j < cells[i].length; j++) {
         let checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.setAttribute("id", i * cells.length);
+        checkbox.setAttribute("id", i * cells[i].length + j);
+        checkbox.addEventListener("click", clickHandler);
         checkbox.checked = cells[i][j];
         grid.appendChild(checkbox);
       }
     }
   }
+
+  function updateCells(grid, cells) {
+    for (let i = 0; i < cells.length; i++) {
+      for (let j = 0; j < cells[i].length; j++) {
+        cells[i][j] = grid.children[i * cells[i].length + j].checked;
+      }
+    }
+  }
+
+  function countLifes(rowIndex, startColumn) {
+    let nextRowIndex;
+    let endColumn;
+    if (rowIndex == -1) {
+      rowIndex = 0;
+      nextRowIndex = 2;
+    } else nextRowIndex = rowIndex + 3;
+    if (startColumn == -1) {
+      startColumn = 0;
+      endColumn = 2;
+    } else endColumn = startColumn + 3;
+    let rowLength = cells[rowIndex].length;
+
+    return cells.slice(rowIndex, nextRowIndex)
+      .map(row => {
+        return row.slice(startColumn, endColumn)
+          .filter(value => value)
+          .length;
+      })
+      .reduce((acc, cur) => acc + cur, 0); 
+  }
   
   let cells = randomCells();
+  let next = document.querySelector("#next");
   let grid = document.querySelector("#grid");
-  grid.style.width = 1.3 * COLUMNS + "em";
-  appendCellElements(grid, cells);
+  grid.style.width = 1.28 * COLUMNS + "em";
 
+  appendCellElements(grid, cells, (event) => {
+    let id = parseInt(event.target.getAttribute("id"));
+    let index = id % COLUMNS;
+    cells[(id - index) / COLUMNS][index] = event.target.checked;
+  });
+
+  next.addEventListener("click", (event) => {
+    for (let element of grid.children) {
+      let id = parseInt(element.getAttribute("id"));
+      let index = id % COLUMNS;
+      let rowIndex = (id - index) / COLUMNS;
+      let count = countLifes(rowIndex - 1, index - 1); 
+      if ((element.checked && (count - 1 < 2 || count - 1 > 3)) ||
+        (!element.checked && count == 3)) {
+        element.checked = !element.checked;
+      }
+    }
+    updateCells(grid, cells);
+  });
 </script>
