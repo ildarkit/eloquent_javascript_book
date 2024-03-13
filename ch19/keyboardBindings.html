@@ -24,14 +24,14 @@
             tabIndex: 0,
             onkeydown: (event) => {
                 let action = null;
-                for (let tool of Object.keys(tools)) {
-                    if (tool.charAt(0) == event.key) {
-                        action = {tool};
-                        break;
+                if (!event.ctrlKey && !event.metaKey) {
+                    for (let tool of Object.keys(tools)) {
+                        if (tool.charAt(0) == event.key) {
+                            action = {tool};
+                            break;
+                        }
                     }
-                }
-                if (event.key == "z" &&
-                    (event.ctrlKey || event.metaKey)) action = {undo: true};
+                } else if (event.key == "z") action = {undo: true};
                 if (action != null) dispatch(action);
             }
         },
