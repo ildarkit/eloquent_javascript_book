@@ -1,0 +1,51 @@
+<!doctype html>
+<script src="./19_paint.js"></script>
+
+<div></div>
+<script>
+  // The original PixelEditor class. Extend the constructor.
+  var PixelEditor = class PixelEditor {
+    constructor(state, config) {
+      let {tools, controls, dispatch} = config;
+      this.state = state;
+
+      this.canvas = new PictureCanvas(state.picture, pos => {
+        let tool = tools[this.state.tool];
+        let onMove = tool(pos, this.state, dispatch);
+        if (onMove) {
+          return pos => onMove(pos, this.state, dispatch);
+        }
+      });
+      this.controls = controls.map(
+        Control => new Control(state, config));
+      this.dom = elt(
+        "div",
+        {
+            tabIndex: 0,
+            onkeydown: (event) => {
+                let action = null;
+                for (let tool of Object.keys(tools)) {
+                    if (tool.charAt(0) == event.key) {
+                        action = {tool};
+                        break;
+                    }
+                }
+                if (event.key == "z" &&
+                    (event.ctrlKey || event.metaKey)) action = {undo: true};
+                if (action != null) dispatch(action);
+            }
+        },
+        this.canvas.dom, elt("br"),
+        ...this.controls.reduce((a, c) => a.concat(" ", c.dom), [])
+      );
+    }
+    syncState(state) {
+      this.state = state;
+      this.canvas.syncState(state.picture);
+      for (let ctrl of this.controls) ctrl.syncState(state);
+    }
+  }
+
+  document.querySelector("div")
+    .appendChild(startPixelEditor({}));
+</script>
