@@ -1,0 +1,46 @@
+<!doctype html>
+<script src="./19_paint.js"></script>
+
+<div></div>
+<script>
+  // Change this method
+  PictureCanvas.prototype.syncState = function(picture) {
+    if (this.picture == picture) return;
+    let cleanPicture = this.picture == undefined;
+    let pixelMask = new Array();
+    if (this.picture != undefined) {
+      this.picture.pixels.map((pixel, index) => {
+        if (pixel != picture.pixels[index]) pixelMask.push(index);
+      });
+    }
+    this.picture = picture;
+    drawPicture(this.picture, pixelMask, cleanPicture, this.dom, scale);
+  };
+
+  // You may want to use or change this as well
+  function drawPicture(picture, pixelMask, cleanCanvas, canvas, scale) {
+    if (cleanCanvas) {
+      canvas.width = picture.width * scale;
+      canvas.height = picture.height * scale;
+    }
+    let cx = canvas.getContext("2d");
+
+    if (cleanCanvas) {
+      for (let y = 0; y < picture.height; y++) {
+        for (let x = 0; x < picture.width; x++) {
+          cx.fillStyle = picture.pixel(x, y);
+          cx.fillRect(x * scale, y * scale, scale, scale);
+        }
+      }
+    } else {
+      for (let pixel of pixels) {
+        let {x, y} = picture.posFromIndex(pixel);
+        cx.fillStyle = picture.pixel(x, y);
+        cx.fillRect(x * scale, y * scale, scale, scale); 
+      }
+    }
+  }
+
+  document.querySelector("div")
+    .appendChild(startPixelEditor({}));
+</script>

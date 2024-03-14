@@ -11,6 +11,10 @@ var Picture = class Picture {
     pixel(x, y) {
       return this.pixels[x + y * this.width];
     }
+    posFromIndex(index) {
+      let x = index % this.width;
+      return {x, y: (index - x) / this.width};
+    }
     draw(pixels) {
       let copy = this.pixels.slice();
       for (let {x, y, color} of pixels) {
