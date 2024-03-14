@@ -7,18 +7,18 @@
   PictureCanvas.prototype.syncState = function(picture) {
     if (this.picture == picture) return;
     let cleanPicture = this.picture == undefined;
-    let pixelMask = new Array();
-    if (this.picture != undefined) {
+    let drawPixels = new Array();
+    if (!cleanPicture) {
       this.picture.pixels.map((pixel, index) => {
-        if (pixel != picture.pixels[index]) pixelMask.push(index);
+        if (pixel != picture.pixels[index]) drawPixels.push(index);
       });
     }
     this.picture = picture;
-    drawPicture(this.picture, pixelMask, cleanPicture, this.dom, scale);
+    drawPicture(this.picture, this.dom, scale, drawPixels, cleanPicture);
   };
 
   // You may want to use or change this as well
-  function drawPicture(picture, pixelMask, cleanCanvas, canvas, scale) {
+  function drawPicture(picture, canvas, scale, drawPixels, cleanCanvas = true) {
     if (cleanCanvas) {
       canvas.width = picture.width * scale;
       canvas.height = picture.height * scale;
@@ -33,13 +33,29 @@
         }
       }
     } else {
-      for (let pixel of pixels) {
+      for (let pixel of drawPixels) {
         let {x, y} = picture.posFromIndex(pixel);
         cx.fillStyle = picture.pixel(x, y);
         cx.fillRect(x * scale, y * scale, scale, scale); 
       }
     }
   }
+
+  // function drawPicture(picture, canvas, scale, drawPixels, cleanCanvas = true)  {
+  //   let pixels;
+  //   if (cleanCanvas) {
+  //     canvas.width = picture.width * scale;
+  //     canvas.height = picture.height * scale;
+  //     pixels = picture.pixels;
+  //   } else pixels = drawPixels;
+  //   let cx = canvas.getContext("2d");
+
+  //   for (let pixel of pixels) {
+  //     let {x, y} = picture.posFromIndex(pixel);
+  //     cx.fillStyle = picture.pixel(x, y);
+  //     cx.fillRect(x * scale, y * scale, scale, scale); 
+  //   }
+  // }
 
   document.querySelector("div")
     .appendChild(startPixelEditor({}));
