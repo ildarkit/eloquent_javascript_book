@@ -13,8 +13,32 @@
     return drawPixel;
   }
 
-  function line(pos, state, dispatch) {
+  function line(start, state, dispatch) {
     // Your code here
+    function drawLine(pos) {
+        let drawn = [];
+        let dy = pos.y - start.y;
+        let dx = pos.x - start.x; 
+        let lineLength = Math.round(Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
+        let incX = dx / lineLength;
+        let incY = dy / lineLength;
+        let posX = 0;
+        let posY = 0;
+        
+        // console.log(`step = ${lineLength}, kx = ${incX}, ky = ${incY}, dx = ${dx}, dy = ${dy}`); 
+        for (let i = 0; i < lineLength; i++) {
+            posX += incX;
+            posY += incY; 
+            drawn.push({
+                x: start.x + Math.round(posX),
+                y: start.y + Math.round(posY),
+                color: state.color
+            }); 
+        } 
+        dispatch({picture: state.picture.draw(drawn)});
+    }
+    drawLine(start);
+    return drawLine;
   }
 
   let dom = startPixelEditor({
