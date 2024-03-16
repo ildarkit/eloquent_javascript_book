@@ -4,12 +4,14 @@
 <div></div>
 <script>
   // The old draw tool. Rewrite this.
-  function draw(pos, state, dispatch) {
-    function drawPixel({x, y}, state) {
-      let drawn = {x, y, color: state.color};
-      dispatch({picture: state.picture.draw([drawn])});
+  function draw(start, state, dispatch) {
+    let previousPos = start; 
+    function drawPixel(pos, state) {
+      let drawLine = line(previousPos, state, dispatch);
+      drawLine(pos);
+      previousPos = pos;
     }
-    drawPixel(pos, state);
+    drawPixel(start, state);
     return drawPixel;
   }
 
