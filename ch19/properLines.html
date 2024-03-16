@@ -24,16 +24,27 @@
         let incY = dy / lineLength;
         let posX = 0;
         let posY = 0;
+        let roundX;
+        let roundY;
+
+        if (Math.round(incX * 100) > Math.round(incY * 100)) {
+          if (Math.round(incX * 100) > 0) roundX = Math.ceil;
+          else roundX = Math.floor;
+          roundY = Math.round;
+        } else {
+          if (Math.round(incY * 100) > 0) roundY = Math.ceil;
+          else roundY = Math.floor;
+          roundX = Math.round;
+        }
         
-        // console.log(`step = ${lineLength}, kx = ${incX}, ky = ${incY}, dx = ${dx}, dy = ${dy}`); 
-        for (let i = 0; i < lineLength; i++) {
+        for (let i = 0; i < lineLength; i++) { 
+            drawn.push({
+                x: start.x + roundX(posX),
+                y: start.y + roundY(posY),
+                color: state.color
+            });
             posX += incX;
             posY += incY; 
-            drawn.push({
-                x: start.x + Math.round(posX),
-                y: start.y + Math.round(posY),
-                color: state.color
-            }); 
         } 
         dispatch({picture: state.picture.draw(drawn)});
     }
