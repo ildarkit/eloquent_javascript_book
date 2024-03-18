@@ -1,0 +1,14 @@
+{
+  "name": "file_server",
+  "version": "1.0.0",
+  "description": "http file server",
+  "main": "file_server.mjs",
+  "dependencies": {
+    "mime-types": "^2.1.35"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

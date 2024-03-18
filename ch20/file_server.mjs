@@ -89,3 +89,21 @@ methods.PUT = async function(request) {
   await pipeStream(request, createWriteStream(path));
   return {status: 204};
 };
+
+import { mkdir } from "node:fs";
+
+methods.MKCOL = async function(request) {
+  let path = urlPath(request.url);
+  let notExists = false;
+  try {
+    await stat(path);
+  } catch (err) {
+    if (err.code == "ENOENT") notExists = true;
+    else throw err;
+  }
+  if (notExists) mkdir(path, {recursive: true}, err => {
+    if (err) console.error(err.message);
+    return {status: 403};
+  });
+  return {status: 201};
+};
