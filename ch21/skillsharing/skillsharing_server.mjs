@@ -1,5 +1,8 @@
 import {createServer} from "node:http";
 import serveStatic from "serve-static";
+import { readFileSync, writeFile } from "node:fs";
+
+const STORAGE = "./talks.json";
 
 function notFound(request, response) {
   response.writeHead(404, "Not found");
@@ -61,6 +64,7 @@ router.add("GET", talkPath, async (server, title) => {
 router.add("DELETE", talkPath, async (server, title) => {
   if (Object.hasOwn(server.talks, title)) {
     delete server.talks[title];
+    storeData(STORAGE, server.talks);
     server.updated();
   }
   return {status: 204};
@@ -82,6 +86,7 @@ router.add("PUT", talkPath,
     summary: talk.summary,
     comments: []
   };
+  storeData(STORAGE, server.talks);
   server.updated();
   return {status: 204};
 });
@@ -95,6 +100,7 @@ router.add("POST", /^\/talks\/([^\/]+)\/comments$/,
     return {status: 400, body: "Bad comment data"};
   } else if (Object.hasOwn(server.talks, title)) {
     server.talks[title].comments.push(comment);
+    storeData(STORAGE, server.talks);
     server.updated();
     return {status: 204};
   } else {
@@ -143,4 +149,19 @@ SkillShareServer.prototype.updated = function() {
   this.waiting = [];
 };
 
-new SkillShareServer({}).start(8000);
+function loadData(path) {
+  try {
+    let data = readFileSync(path, {encoding: "utf8"});
+    return JSON.parse(data);
+  } catch (err) {
+    if (err.code != "ENOENT") throw err;
+  }
+  return {};
+}
+
+function storeData(path, data) {
+  writeFile(path, JSON.stringify(data),
+    err => { if (err) console.error(err.message); });
+}
+
+new SkillShareServer(loadData(STORAGE)).start(8000);
