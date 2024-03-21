@@ -58,13 +58,14 @@ function elt(type, props, ...children) {
   let dom = document.createElement(type);
   if (props) Object.assign(dom, props);
   for (let child of children) {
+    if (child == undefined) continue;
     if (typeof child != "string") dom.appendChild(child);
     else dom.appendChild(document.createTextNode(child));
   }
   return dom;
 }
 
-function renderTalk(talk, dispatch) {
+function renderTalk(talk, value = "", dispatch) {
   return elt(
     "section", {className: "talk"},
     elt("h2", null, talk.title, " ", elt("button", {
@@ -86,7 +87,7 @@ function renderTalk(talk, dispatch) {
                   message: form.elements.comment.value});
         form.reset();
       }
-    }, elt("input", {type: "text", name: "comment"}), " ",
+    }, elt("input", {type: "text", name: "comment", value}), " ",
        elt("button", {type: "submit"}, "Add comment")));
 }
 
@@ -133,6 +134,26 @@ async function pollTalks(update) {
   }
 }
 
+function getDOMCommentValues() {
+  let elements = Array.from(document.querySelectorAll(".talk"));
+  let values = []
+  for (let el of elements) { 
+    let commentValue = el.querySelector("form").elements.comment.value;
+    if (commentValue != "") {
+      let title = el.querySelector("h2").childNodes[0].textContent;
+      let presenter = el.querySelector("div > strong").textContent;
+      values.push({title, presenter, value: commentValue});
+    }
+  }
+  return values;
+}
+
+function findValue(domNode, values) {
+  let index = values.findIndex(v => v.title == domNode.title &&
+    v.presenter == domNode.presenter);
+  return index >= 0 ? values[index].value: undefined;
+} 
+
 var SkillShareApp = class SkillShareApp {
   constructor(state, dispatch) {
     this.dispatch = dispatch;
@@ -146,10 +167,16 @@ var SkillShareApp = class SkillShareApp {
 
   syncState(state) {
     if (state.talks != this.talks) {
+      let talkValues = getDOMCommentValues();
       this.talkDOM.textContent = "";
       for (let talk of state.talks) {
         this.talkDOM.appendChild(
-          renderTalk(talk, this.dispatch));
+          renderTalk(
+            talk,
+            findValue(talk, talkValues),
+            this.dispatch
+          )
+        );
       }
       this.talks = state.talks;
     }
